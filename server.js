@@ -8,16 +8,7 @@ var express = require('express'),
     bodyParser = require('body-parser'),   // pull information from HTML POST
     morgan  = require('morgan'),
     moment = require('moment'); 
-
-var mailServer  = emailjs.server.connect({
-   user:    "alex.barrios.ureta", 
-   password:"6Fovajo9", 
-   host:    "smtp.gmail.com", 
-   ssl:     true
-});
-
-mongoose.connect('mongodb://abarrios:6fovajo9@ds157809.mlab.com:57809/babapdb');
-    
+	
 Object.assign=require('object-assign')
 
 app.engine('html', require('ejs').renderFile);
@@ -30,10 +21,20 @@ app.use(function(req, res, next) {
    res.header('Access-Control-Allow-Methods', 'DELETE, PUT');
    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
    next();
+})
+
+var mailServer  = emailjs.server.connect({
+   user:    "alex.barrios.ureta", 
+   password:"6Fovajo9", 
+   host:    "smtp.gmail.com", 
+   ssl:     true
 });
 
+mongoose.connect('mongodb://abarrios:6fovajo9@ds157809.mlab.com:57809/babapdb');
+    
+
 var port = process.env.PORT || process.env.OPENSHIFT_NODEJS_PORT || 8080,
-    ip   = process.env.IP   || process.env.OPENSHIFT_NODEJS_IP || '127.0.0.1',
+    ip   = process.env.IP   || process.env.OPENSHIFT_NODEJS_IP || '0.0.0.0',
     mongoURL = process.env.OPENSHIFT_MONGODB_DB_URL || process.env.MONGO_URL,
     mongoURLLabel = "";
 
@@ -57,6 +58,9 @@ if (mongoURL == null && process.env.DATABASE_SERVICE_NAME) {
   }
 }
 
+var db = null,
+    dbDetails = new Object();
+	
 var initDb = function(callback) {
   if (mongoURL == null) return;
 
@@ -271,7 +275,7 @@ app.get('/api/username/:username', function(req, res) {
     });
 
 // on every save, add the date
-userSchema.pre('save', function(next) {
+/*userSchema.pre('save', function(next) {
   // get the current date
   var currentDate = new Date();
   
@@ -283,7 +287,7 @@ userSchema.pre('save', function(next) {
     this.created_at = currentDate;
 
   next();
-});
+});*/
 
 
 // error handling
