@@ -16,11 +16,17 @@ app.use(bodyParser.urlencoded({'extended':'true'}));            // parse applica
 app.use(bodyParser.json());                                     // parse application/json
 app.use(bodyParser.json({ type: 'application/vnd.api+json' })); // parse application/vnd.api+json as json
 app.use(morgan('combined'));
+
 app.use(function(req, res, next) {
-   res.header("Access-Control-Allow-Origin", "*");
-   res.header('Access-Control-Allow-Methods', 'DELETE, PUT');
-   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-   next();
+  var allowedOrigins = ['http://127.0.0.1:8020', 'http://localhost:8020', 'http://127.0.0.1:9000', 'http://localhost:9000', 'http://localhost:8100', 'http://127.0.0.1:8100'];
+  var origin = req.headers.origin;
+  if(allowedOrigins.indexOf(origin) > -1){
+       res.setHeader('Access-Control-Allow-Origin', origin);
+  }
+   //res.header("Access-Control-Allow-Origin", "http://localhost:8100");
+   res.header('Access-Control-Allow-Methods', 'DELETE, PUT, GET, OPTIONS');
+   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
+   return next();
 })
 
 var mailServer  = emailjs.server.connect({
@@ -97,8 +103,6 @@ var userSchema = new Schema({
  
 // Models
 var User = mongoose.model('User', userSchema);
-var db = null,
-    dbDetails = new Object();
 
 var apiRoutes = express.Router();
 
